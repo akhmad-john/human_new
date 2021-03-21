@@ -2,10 +2,11 @@ from django.db import models
 from tinymce.models import HTMLField
 from django.utils.translation import gettext as _
 
+from core.models import TimeStampMixin
 # Create your models here.
 
 
-class Category(models.Model):
+class Category(TimeStampMixin):
     name = models.CharField(max_length=20)
 
     class Meta:
@@ -15,9 +16,9 @@ class Category(models.Model):
         return self.name
 
 
-class SubCategory(models.Model):
+class SubCategory(TimeStampMixin):
     name = models.CharField(max_length=20)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='sub_categories')
 
     def __str__(self):
         return self.category.name + ' - ' + self.name
@@ -26,8 +27,15 @@ class SubCategory(models.Model):
         verbose_name_plural = 'subcategories'
 
 
-class Article(models.Model):
-    main_image = models.ImageField(upload_to='main_images')
+class Tag(TimeStampMixin):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
+
+class Article(TimeStampMixin):
+    main_image = models.ImageField(upload_to='main_images/')
+    tag = models.ManyToManyField(Tag, related_name="article")
 
     ru_heading = models.CharField(max_length=50)
     oz_heading = models.CharField(max_length=50)
@@ -40,13 +48,16 @@ class Article(models.Model):
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.heading
+        return self.ru_heading
 
-class ContentBlock(models.Model):
+class ContentBlock(TimeStampMixin):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='content_blocks')
     
     ru_content =  HTMLField()
     oz_content =  HTMLField()
     uz_content =  HTMLField()
 
-    block_image = models.ImageField(upload_to='images')
+    block_image = models.ImageField(upload_to='in_content_images/')
+
+    # def __str__(self):
+    #     return "Block #"

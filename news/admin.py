@@ -8,8 +8,13 @@ from .models import *
 class CategoryAdmin(admin.ModelAdmin):
     pass
 
+
 @admin.register(SubCategory)
 class SubCategoryAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
     pass
 
 
@@ -17,6 +22,7 @@ class ContentBlockRuInline(admin.StackedInline):
     model = ContentBlock
     fields = ['ru_content', 'block_image',]
     min_num = 0
+    extra = 1
     suit_classes = 'suit-tab suit-tab-russian'
 
 
@@ -25,6 +31,7 @@ class ContentBlockOzInline(admin.StackedInline):
     model = ContentBlock
     fields = ['oz_content',]
     min_num = 0
+    extra = 1
     suit_classes = 'suit-tab suit-tab-uzbeklat'
 
 
@@ -33,6 +40,7 @@ class ContentBlockUzInline(admin.StackedInline):
     model = ContentBlock
     fields = ['uz_content',]
     min_num = 0
+    extra = 1
     suit_classes = 'suit-tab suit-tab-uzbekcyr'
 
 
@@ -46,7 +54,7 @@ class ArticleAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {
             'classes': ('suit-tab', 'suit-tab-russian',),
-            'fields': ['sub_category', 'main_image','ru_heading', 'ru_subheading',]
+            'fields': ['sub_category', 'tag', 'main_image','ru_heading', 'ru_subheading',]
         }),
         (None, {
             'classes': ('suit-tab', 'suit-tab-uzbeklat',),
@@ -56,8 +64,8 @@ class ArticleAdmin(admin.ModelAdmin):
             'fields': [ 'uz_heading', 'uz_subheading',]}),
 
     ]
-       
-
+    filter_horizontal = ('tag',)
     suit_form_tabs = (('russian', 'Русский'), ('uzbeklat', 'O`zbekcha'), ('uzbekcyr', 'Узбекча'))
+    list_display = ('id', 'ru_heading', 'created_at')
 
 
