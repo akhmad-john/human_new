@@ -13,3 +13,15 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name', 'sub_categories',)
+
+
+class ArticleRuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = ('ru_heading',)
+
+
+class ArticleUzSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = ('uz_heading',)
