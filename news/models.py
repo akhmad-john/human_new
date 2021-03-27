@@ -7,21 +7,25 @@ from core.models import TimeStampMixin
 
 
 class Category(TimeStampMixin):
-    name = models.CharField(max_length=20)
+    ru_name = models.CharField(max_length=20)
+    oz_name = models.CharField(max_length=20, null=True)
+    uz_name = models.CharField(max_length=20, null=True)
 
     class Meta:
         verbose_name_plural = 'categories'
 
     def __str__(self):
-        return self.name
+        return self.ru_name
 
 
 class SubCategory(TimeStampMixin):
-    name = models.CharField(max_length=20)
+    ru_name = models.CharField(max_length=20)
+    oz_name = models.CharField(max_length=20, null=True)
+    uz_name = models.CharField(max_length=20, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='sub_categories')
 
     def __str__(self):
-        return self.category.name + ' - ' + self.name
+        return self.category.ru_name + ' - ' + self.ru_name
 
     class Meta:
         verbose_name_plural = 'subcategories'

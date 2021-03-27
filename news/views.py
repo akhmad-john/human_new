@@ -8,8 +8,15 @@ from rest_framework.response import Response
 
 class CategoryriesViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
 
+    def get_serializer_class(self):
+        print(self.request.LANGUAGE_CODE)
+        if self.request.LANGUAGE_CODE == 'ru':
+            return CategoryRuSerializer
+        elif self.request.LANGUAGE_CODE == 'uz':
+            return CategoryUzSerializer
+        else:
+            return CategoryOzSerializer
 
 class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Article.objects.all()
@@ -21,4 +28,4 @@ class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
         elif self.request.LANGUAGE_CODE == 'uz':
             return ArticleUzSerializer
         else:
-            return Response({'asd':'sdfs'})
+            return ArticleOzSerializer
