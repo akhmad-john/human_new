@@ -20,7 +20,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class ContentBlockRuInline(admin.StackedInline):
     model = ContentBlock
-    fields = ['ru_content', 'block_image',]
+    fields = ['ru_content', 'block_image', 'video_link']
     min_num = 0
     extra = 1
     suit_classes = 'suit-tab suit-tab-russian'
@@ -66,6 +66,8 @@ class ArticleAdmin(admin.ModelAdmin):
     ]
     filter_horizontal = ('tag',)
     suit_form_tabs = (('russian', 'Русский'), ('uzbeklat', 'O`zbekcha'), ('uzbekcyr', 'Узбекча'))
-    list_display = ('id', 'ru_heading', 'created_at')
+    list_filter = ('sub_category', 'sub_category__category', 'tag')
+    list_display = ('id', 'ru_heading', 'created_at', 'display')
+    list_editable = ('display',)
 
 

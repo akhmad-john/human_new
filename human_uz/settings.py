@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'rest_framework',
     'tinymce',
+    'django_filters',
 
     # in-project apps
     'core',
@@ -146,6 +147,12 @@ STATIC_ROOT = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+}
 
 SUIT_CONFIG = {
     'ADMIN_NAME': 'Human.uz'
