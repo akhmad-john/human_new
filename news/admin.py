@@ -50,11 +50,11 @@ class ArticleAdmin(admin.ModelAdmin):
 
     # fields = ('sub_category', 'ru_heading', 'main_image',)
     inlines = [ContentBlockRuInline, ContentBlockOzInline, ContentBlockUzInline]
-
+    # readonly_fields = ['created_at']
     fieldsets = [
         (None, {
             'classes': ('suit-tab', 'suit-tab-russian',),
-            'fields': ['sub_category', 'tag', 'main_image','ru_heading', 'ru_subheading',]
+            'fields': ['sub_category', 'tag', 'main_image','ru_heading', 'ru_subheading', 'created_at']
         }),
         (None, {
             'classes': ('suit-tab', 'suit-tab-uzbeklat',),
