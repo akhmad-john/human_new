@@ -80,25 +80,28 @@ class ArticleRuSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    category = serializers.SerializerMethodField('get_category')
-    sub_category = serializers.SerializerMethodField('get_sub_category')
+    # category = serializers.SerializerMethodField('get_category')
+    # sub_category = serializers.SerializerMethodField('get_sub_category')
     heading = serializers.CharField()
+    subheading = serializers.CharField()
+    category_name = serializers.CharField()
+    subcategory_name = serializers.CharField()
 
     class Meta:
         model = Article
-        fields = ('heading',  'category', 'sub_category')
+        fields = ('id', 'heading', 'subheading', 'category_name', 'subcategory_name')
 
-    def get_category(self, obj):
-        return {
-            "id": obj.sub_category.category.id,
-            "name": obj.sub_category.category.uz_name
-        }
+    # def get_category(self, obj):
+    #     return {
+    #         "id": obj.sub_category.category.id,
+    #         "name": self.category_name
+    #     }
 
-    def get_sub_category(self, obj):
-        return {
-            "id": obj.sub_category.category.id,
-            "name": obj.sub_category.uz_name
-        }
+    # def get_sub_category(self, obj):
+    #     return {
+    #         "id": obj.sub_category.category.id,
+    #         "name": obj.sub_category.uz_name
+    #     }
 
 
 class ArticleUzSerializer(serializers.ModelSerializer):

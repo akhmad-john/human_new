@@ -41,13 +41,13 @@ class Article(models.Model):
     main_image = models.ImageField(upload_to='main_images/')
     tag = models.ManyToManyField(Tag, related_name="article")
 
-    ru_heading = models.CharField(max_length=50)
-    oz_heading = models.CharField(max_length=50)
-    uz_heading = models.CharField(max_length=50)
+    ru_heading = models.CharField(max_length=50, null=True, blank=True)
+    oz_heading = models.CharField(max_length=50, null=True, blank=True)
+    uz_heading = models.CharField(max_length=50, null=True, blank=True)
 
-    ru_subheading = models.TextField()
-    oz_subheading = models.TextField()
-    uz_subheading = models.TextField()
+    ru_subheading = models.TextField(null=True, blank=True)
+    oz_subheading = models.TextField(null=True, blank=True)
+    uz_subheading = models.TextField(null=True, blank=True)
 
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
 

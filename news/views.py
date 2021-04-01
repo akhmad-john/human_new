@@ -51,16 +51,33 @@ class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
         general_queryset = []
         # latest
         if self.request.LANGUAGE_CODE == 'ru':
-            qs = self.queryset \
+            qs = self.queryset\
                 .annotate(heading=F('ru_heading'))\
-                .order_by('-created_at')[:8]
+                .annotate(category_name=F('sub_category__category__ru_name'))\
+                .annotate(subcategory_name=F('sub_category__ru_name'))\
+                .annotate(subheading=F('ru_subheading'))\
 
+            latest_qs = qs\
+                .order_by('sub_category__category', '-created_at')\
+                .distinct('sub_category__category',)
+        serializer = ArticleSerializer(latest_qs, many=True)
         # general_queryset.append(qs)
-        print(general_queryset)
+        print(serializer)
         popular_dict = {
             "category": "Последние",
-            "data": qs.values()
+            "data": serializer.data
         }
         general_queryset.append(popular_dict)
+
+        #others
+        categories = Category.objects.all()
+        for category in categories:
+            category_qs = qs.filter(sub_category__category=category)[:6]
+            category_serializer = ArticleSerializer(category_qs, many=True)
+            category_dict = {
+                "category": category.ru_name,
+                "data": category_serializer.data
+            }
+            general_queryset.append(category_dict)
         return Response(general_queryset)
 
