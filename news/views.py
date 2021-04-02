@@ -7,6 +7,7 @@ from django.db.models import F
 from .filters import *
 from itertools import chain
 from django.http import HttpResponse, JsonResponse
+from rest_framework import generics
 # Create your views here.
 
 class CategoryriesViewSet(viewsets.ReadOnlyModelViewSet):
@@ -80,4 +81,34 @@ class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
             }
             general_queryset.append(category_dict)
         return Response(general_queryset)
+
+
+class ArticleContentView(generics.RetrieveAPIView):
+    lookup_url_kwarg = "id"
+    queryset = Article.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.LANGUAGE_CODE == 'ru':
+            return ArticleDetailRuSerializer
+        elif self.request.LANGUAGE_CODE == 'uz':
+            return ArticleDetailUzSerializer
+        else:
+            return ArticleDetailOzSerializer
+
+    # def get_queryset(self):
+    #
+    #     if self.request.LANGUAGE_CODE == 'ru':
+    #         qs = self.queryset \
+    #             .annotate(heading=F('ru_heading')) \
+    #             .annotate(category_name=F('sub_category__category__ru_name')) \
+    #             .annotate(subcategory_name=F('sub_category__ru_name')) \
+    #             .annotate(subheading=F('ru_subheading'))\
+    #             .annotate(content=F('content_blocks__ru_content')).distinct('id')
+    #
+    #     return qs
+
+
+
+
+
 

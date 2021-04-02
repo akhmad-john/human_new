@@ -147,3 +147,62 @@ class ArticleOzSerializer(serializers.ModelSerializer):
             "id": obj.sub_category.category.id,
             "name": obj.sub_category.oz_name
         }
+
+
+class ContentBlockRuSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(source='ru_content')
+    class Meta:
+        model = ContentBlock
+        fields = ('content', 'block_image', 'video_link')
+
+
+class ContentBlockUzSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(source='uz_content')
+    class Meta:
+        model = ContentBlock
+        fields = ('content', 'block_image', 'video_link')
+
+
+class ContentBlockOzSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(source='oz_content')
+    class Meta:
+        model = ContentBlock
+        fields = ('content', 'block_image', 'video_link')
+
+
+class ArticleDetailRuSerializer(serializers.ModelSerializer):
+    heading = serializers.CharField(source='ru_heading')
+    subheading = serializers.CharField(source='ru_subheading')
+    content_blocks = ContentBlockRuSerializer(many=True)
+    class Meta:
+        model = Article
+        fields = ('heading', 'subheading', 'content_blocks')
+
+
+class ArticleDetailRuSerializer(serializers.ModelSerializer):
+    heading = serializers.CharField(source='ru_heading')
+    subheading = serializers.CharField(source='ru_subheading')
+    content_blocks = ContentBlockRuSerializer(many=True)
+
+    class Meta:
+        model = Article
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks')
+
+
+class ArticleDetailUzSerializer(serializers.ModelSerializer):
+    heading = serializers.CharField(source='uz_heading')
+    subheading = serializers.CharField(source='uz_subheading')
+    content_blocks = ContentBlockUzSerializer(many=True)
+
+    class Meta:
+        model = Article
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks')
+
+
+class ArticleDetailOzSerializer(serializers.ModelSerializer):
+    heading = serializers.CharField(source='oz_heading')
+    subheading = serializers.CharField(source='oz_subheading')
+    content_blocks = ContentBlockRuSerializer(many=True)
+    class Meta:
+        model = Article
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks')

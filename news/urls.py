@@ -7,5 +7,6 @@ router.register(r'categories', CategoryriesViewSet)
 router.register(r'articles', ArticleListViewSet)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('detail/<int:id>/', ArticleContentView.as_view()),
 ]
