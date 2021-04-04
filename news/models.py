@@ -11,6 +11,8 @@ class Category(TimeStampMixin):
     oz_name = models.CharField(max_length=20, null=True)
     uz_name = models.CharField(max_length=20, null=True)
 
+    home_display = models.BooleanField(default=False)
+
     class Meta:
         verbose_name_plural = 'categories'
 
@@ -23,6 +25,8 @@ class SubCategory(TimeStampMixin):
     oz_name = models.CharField(max_length=20, null=True)
     uz_name = models.CharField(max_length=20, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='sub_categories')
+
+    home_display = models.BooleanField(default=False)
 
     def __str__(self):
         return self.category.ru_name + ' - ' + self.ru_name

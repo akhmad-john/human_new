@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'tinymce',
     'django_filters',
     'corsheaders',
+    'drf_yasg',
 
     # in-project apps
     'core',

@@ -48,38 +48,135 @@ class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
     #     else:
     #         return ArticleOzSerializer
 
-    def list(self, request):
-        general_queryset = []
-        # latest
+    def get_queryset(self):
         if self.request.LANGUAGE_CODE == 'ru':
             qs = self.queryset\
                 .annotate(heading=F('ru_heading'))\
                 .annotate(category_name=F('sub_category__category__ru_name'))\
                 .annotate(subcategory_name=F('sub_category__ru_name'))\
-                .annotate(subheading=F('ru_subheading'))\
+                .annotate(subheading=F('ru_subheading'))
+        elif self.request.LANGUAGE_CODE == 'uz':
+            qs = self.queryset\
+                .annotate(heading=F('uz_heading'))\
+                .annotate(category_name=F('sub_category__category__uz_name'))\
+                .annotate(subcategory_name=F('sub_category__uz_name'))\
+                .annotate(subheading=F('uz_subheading'))
+        else:
+            qs = self.queryset\
+                .annotate(heading=F('oz_heading'))\
+                .annotate(category_name=F('sub_category__category__oz_name'))\
+                .annotate(subcategory_name=F('sub_category__oz_name'))\
+                .annotate(subheading=F('oz_subheading'))
 
-            latest_qs = qs\
-                .order_by('sub_category__category', '-created_at')\
-                .distinct('sub_category__category',)
+        return qs
+
+
+class ArticleListHomeView(generics.ListAPIView):
+    queryset = Article.objects.filter(display=True)
+    serializer_class = ArticleSerializer
+
+    def list(self, request, *args, **kwargs):
+        general_queryset = []
+        # latest
+        if self.request.LANGUAGE_CODE == 'ru':
+            qs = self.queryset \
+                .annotate(heading=F('ru_heading')) \
+                .annotate(category_name=F('sub_category__category__ru_name')) \
+                .annotate(subcategory_name=F('sub_category__ru_name')) \
+                .annotate(subheading=F('ru_subheading'))
+        elif self.request.LANGUAGE_CODE == 'uz':
+            qs = self.queryset \
+                .annotate(heading=F('uz_heading')) \
+                .annotate(category_name=F('sub_category__category__uz_name')) \
+                .annotate(subcategory_name=F('sub_category__uz_name')) \
+                .annotate(subheading=F('uz_subheading'))
+        else:
+            qs = self.queryset \
+                .annotate(heading=F('oz_heading')) \
+                .annotate(category_name=F('sub_category__category__oz_name')) \
+                .annotate(subcategory_name=F('sub_category__oz_name')) \
+                .annotate(subheading=F('oz_subheading'))
+
+        latest_qs = qs \
+            .order_by('sub_category__category', '-created_at') \
+            .distinct('sub_category__category', )
         serializer = ArticleSerializer(latest_qs, many=True)
+
+        excepted_ids = [d['id'] for d in serializer.data]
         # general_queryset.append(qs)
-        print(serializer)
+
         popular_dict = {
             "category": "Последние",
             "data": serializer.data
         }
         general_queryset.append(popular_dict)
 
-        #others
-        categories = Category.objects.all()
+        # others
+        categories = Category.objects.filter(home_display=True)
         for category in categories:
-            category_qs = qs.filter(sub_category__category=category)[:6]
+            category_qs = qs.filter(sub_category__category=category).exclude(id__in=excepted_ids)[:6]
             category_serializer = ArticleSerializer(category_qs, many=True)
             category_dict = {
                 "category": category.ru_name,
                 "data": category_serializer.data
             }
             general_queryset.append(category_dict)
+        return Response(general_queryset)
+
+
+class ArticlesPerCategoryView(generics.ListAPIView):
+    lookup_url_kwarg = "category_id"
+    queryset = Article.objects.filter(display=True)
+    serializer_class = ArticleSerializer
+
+    def list(self, request, *args, **kwargs):
+        general_queryset = []
+        # latest
+        category_id = self.kwargs.get(self.lookup_url_kwarg)
+        qs = self.queryset.filter(sub_category__category_id=category_id)
+        if self.request.LANGUAGE_CODE == 'ru':
+            qs = qs \
+                .annotate(heading=F('ru_heading')) \
+                .annotate(category_name=F('sub_category__category__ru_name')) \
+                .annotate(subcategory_name=F('sub_category__ru_name')) \
+                .annotate(subheading=F('ru_subheading'))
+        elif self.request.LANGUAGE_CODE == 'uz':
+            qs = self.queryset \
+                .annotate(heading=F('uz_heading')) \
+                .annotate(category_name=F('sub_category__category__uz_name')) \
+                .annotate(subcategory_name=F('sub_category__uz_name')) \
+                .annotate(subheading=F('uz_subheading'))
+        else:
+            qs = self.queryset \
+                .annotate(heading=F('oz_heading')) \
+                .annotate(category_name=F('sub_category__category__oz_name')) \
+                .annotate(subcategory_name=F('sub_category__oz_name')) \
+                .annotate(subheading=F('oz_subheading'))
+
+        latest_qs = qs \
+            .order_by('sub_category', '-created_at') \
+            .distinct('sub_category', )
+        serializer = ArticleSerializer(latest_qs, many=True)
+
+        excepted_ids = [d['id'] for d in serializer.data]
+
+
+        popular_dict = {
+            "category": "Последние",
+            "data": serializer.data
+        }
+        general_queryset.append(popular_dict)
+
+        # others
+        sub_categories = SubCategory.objects.filter(home_display=True, category_id=category_id)
+        for sub_category in sub_categories:
+            sub_category_qs = qs.filter(sub_category=sub_category).exclude(id__in=excepted_ids)[:6]
+            sub_category_serializer = ArticleSerializer(sub_category_qs, many=True)
+            sub_category_dict = {
+                "category": sub_category.ru_name,
+                "data": sub_category_serializer.data
+            }
+            general_queryset.append(sub_category_dict)
         return Response(general_queryset)
 
 
@@ -94,21 +191,4 @@ class ArticleContentView(generics.RetrieveAPIView):
             return ArticleDetailUzSerializer
         else:
             return ArticleDetailOzSerializer
-
-    # def get_queryset(self):
-    #
-    #     if self.request.LANGUAGE_CODE == 'ru':
-    #         qs = self.queryset \
-    #             .annotate(heading=F('ru_heading')) \
-    #             .annotate(category_name=F('sub_category__category__ru_name')) \
-    #             .annotate(subcategory_name=F('sub_category__ru_name')) \
-    #             .annotate(subheading=F('ru_subheading'))\
-    #             .annotate(content=F('content_blocks__ru_content')).distinct('id')
-    #
-    #     return qs
-
-
-
-
-
 
