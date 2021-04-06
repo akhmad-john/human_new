@@ -57,6 +57,8 @@ class Article(models.Model):
 
     display = models.BooleanField(default=True)
 
+    view_count = models.IntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=False, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
 

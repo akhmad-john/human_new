@@ -89,7 +89,16 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('id', 'heading', 'subheading', 'main_image', 'category_name', 'subcategory_name')
+        fields = (
+            'id',
+            'heading',
+            'subheading',
+            'main_image',
+            'category_name',
+            'subcategory_name',
+            'created_at',
+            'view_count',
+        )
 
     # def get_category(self, obj):
     #     return {
@@ -112,7 +121,7 @@ class ArticleUzSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('heading', 'subheading', 'main_image', 'category', 'sub_category')
+        fields = ('heading', 'subheading', 'main_image', 'category', 'sub_category', )
 
     def get_category(self, obj):
         return {
