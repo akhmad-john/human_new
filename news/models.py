@@ -61,7 +61,14 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.ru_heading
+        if self.ru_heading is not None:
+            return self.ru_heading
+        elif self.oz_heading is not None:
+            return self.oz_heading
+        elif self.oz_heading is not None:
+            return self.uz_heading
+        else:
+            return "There is no title"
 
     def create(self, *args, **kwargs):
         self.created_at = datetime.datetime.now()
