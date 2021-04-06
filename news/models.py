@@ -73,7 +73,7 @@ class Article(models.Model):
 
     view_count = models.IntegerField(default=0, verbose_name="Количество просмотров")
 
-    created_at = models.DateTimeField(auto_now_add=False, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=False, blank=True, null=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
