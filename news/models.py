@@ -41,7 +41,7 @@ class Tag(TimeStampMixin):
     uz_name = models.CharField(max_length=30, null=True)
 
     def __str__(self):
-        return self.name
+        return self.ru_name
 
 class Article(models.Model):
     main_image = models.ImageField(upload_to='main_images/')
