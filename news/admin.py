@@ -15,7 +15,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    pass
+    exclude = ('created_at',)
 
 
 class ContentBlockRuInline(admin.StackedInline):
