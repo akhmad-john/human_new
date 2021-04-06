@@ -36,7 +36,9 @@ class SubCategory(TimeStampMixin):
 
 
 class Tag(TimeStampMixin):
-    name = models.CharField(max_length=30)
+    ru_name = models.CharField(max_length=30)
+    oz_name = models.CharField(max_length=30, null=True)
+    uz_name = models.CharField(max_length=30, null=True)
 
     def __str__(self):
         return self.name
@@ -85,6 +87,9 @@ class ContentBlock(models.Model):
 
     block_image = models.ImageField(upload_to='in_content_images/', null=True, blank=True)
     video_link = models.CharField(max_length=255,null=True, blank=True)
+
+    class Meta:
+        ordering = ['id']
 
     # def __str__(self):
     #     return "Block #"
