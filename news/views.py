@@ -75,50 +75,79 @@ class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
         return qs
 
 
-
-
-
-
 class ArticleListHomeView(generics.ListAPIView):
     queryset = Article.objects.filter(display=True)
     serializer_class = ArticleSerializer
 
     def list(self, request, *args, **kwargs):
         general_queryset = []
-        # latest
+
         if self.request.LANGUAGE_CODE == 'ru':
             qs = self.queryset \
                 .annotate(heading=F('ru_heading')) \
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
                 .annotate(subheading=F('ru_subheading'))
+            latest_section_name = "Последие"
+            popular_section_name = "Популярное"
+            video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
                 .annotate(heading=F('uz_heading')) \
                 .annotate(category_name=F('sub_category__category__uz_name')) \
                 .annotate(subcategory_name=F('sub_category__uz_name')) \
                 .annotate(subheading=F('uz_subheading'))
+            latest_section_name = "Сўнги хабарлар"
+            popular_section_name = "Оммабоп"
+            video_section_name = "Видео"
         else:
             qs = self.queryset \
                 .annotate(heading=F('oz_heading')) \
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
+            latest_section_name = "So'ngi xabarlar"
+            popular_section_name = "Ommabop"
+            video_section_name = "Video"
 
+
+        # latest
         latest_qs = qs \
             .order_by('sub_category__category', '-created_at') \
             .distinct('sub_category__category', )
-        serializer = ArticleSerializer(latest_qs, many=True)
+        serializer_latest = ArticleSerializer(latest_qs, many=True)
 
-        excepted_ids = [d['id'] for d in serializer.data]
-        # general_queryset.append(qs)
-
+        excepted_ids = [d['id'] for d in serializer_latest.data]
         latest_dict = {
-            "category": "Последние",
+            "category": latest_section_name,
             "style": 1,
-            "data": serializer.data
+            "data": serializer_latest.data
         }
         general_queryset.append(latest_dict)
+
+
+        # most popular
+        popular_qs = qs.order_by('view_count').exclude(id__in=excepted_ids)[:6]
+        serializer_popular = ArticleSerializer(popular_qs, many=True)
+
+        excepted_ids += [d['id'] for d in serializer_popular.data]
+        popular_dict = {
+            "category": popular_section_name,
+            "style": 2,
+            "data": serializer_popular.data
+        }
+        general_queryset.append(popular_dict)
+
+        # video block
+        video_qs = self.queryset\
+            .filter(content_blocks__video_link__isnull=False)\
+            .values('content_blocks__video_link')
+        video_dict = {
+            "category": video_section_name,
+            "style": 3,
+            "data": video_qs
+        }
+
 
         # others
         categories = Category.objects.filter(home_display=True)
@@ -131,6 +160,7 @@ class ArticleListHomeView(generics.ListAPIView):
                 "data": category_serializer.data
             }
             general_queryset.append(category_dict)
+        general_queryset.append(video_dict)
         return Response(general_queryset)
 
 
@@ -141,7 +171,6 @@ class ArticlesPerCategoryView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         general_queryset = []
-        # latest
         category_id = self.kwargs.get(self.lookup_url_kwarg)
         qs = self.queryset.filter(sub_category__category_id=category_id)
         if self.request.LANGUAGE_CODE == 'ru':
@@ -150,32 +179,65 @@ class ArticlesPerCategoryView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
                 .annotate(subheading=F('ru_subheading'))
+            latest_section_name = "Последие"
+            popular_section_name = "Популярное"
+            video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
                 .annotate(heading=F('uz_heading')) \
                 .annotate(category_name=F('sub_category__category__uz_name')) \
                 .annotate(subcategory_name=F('sub_category__uz_name')) \
                 .annotate(subheading=F('uz_subheading'))
+            latest_section_name = "Сўнги хабарлар"
+            popular_section_name = "Оммабоп"
+            video_section_name = "Видео"
         else:
             qs = self.queryset \
                 .annotate(heading=F('oz_heading')) \
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
+            latest_section_name = "So'ngi xabarlar"
+            popular_section_name = "Ommabop"
+            video_section_name = "Video"
 
+        # latest
         latest_qs = qs \
             .order_by('sub_category', '-created_at') \
             .distinct('sub_category', )
-        serializer = ArticleSerializer(latest_qs, many=True)
+        serializer_latest = ArticleSerializer(latest_qs, many=True)
 
-        excepted_ids = [d['id'] for d in serializer.data]
-
+        excepted_ids = [d['id'] for d in serializer_latest.data]
 
         latest_dict = {
-            "category": "Последние",
-            "data": serializer.data
+            "category": latest_section_name,
+            "style": 1,
+            "data": serializer_latest.data
         }
         general_queryset.append(latest_dict)
+
+        # most popular
+        popular_qs = qs.order_by('view_count').exclude(id__in=excepted_ids)[:6]
+        serializer_popular = ArticleSerializer(popular_qs, many=True)
+
+        excepted_ids += [d['id'] for d in serializer_popular.data]
+        popular_dict = {
+            "category": popular_section_name,
+            "style": 2,
+            "data": serializer_popular.data
+        }
+        general_queryset.append(popular_dict)
+
+
+        # video block
+        video_qs = self.queryset\
+            .filter(content_blocks__video_link__isnull=False)\
+            .values('content_blocks__video_link')
+        video_dict = {
+            "category": video_section_name,
+            "style": 3,
+            "data": video_qs
+        }
 
         # others
         sub_categories = SubCategory.objects.filter(home_display=True, category_id=category_id)
@@ -184,9 +246,11 @@ class ArticlesPerCategoryView(generics.ListAPIView):
             sub_category_serializer = ArticleSerializer(sub_category_qs, many=True)
             sub_category_dict = {
                 "category": sub_category.ru_name,
+                "style":2,
                 "data": sub_category_serializer.data
             }
             general_queryset.append(sub_category_dict)
+        general_queryset.append(video_dict)
         return Response(general_queryset)
 
 
@@ -207,31 +271,66 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
                 .annotate(subheading=F('ru_subheading'))
+            latest_section_name = "Последие"
+            popular_section_name = "Популярное"
+            video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
                 .annotate(heading=F('uz_heading')) \
                 .annotate(category_name=F('sub_category__category__uz_name')) \
                 .annotate(subcategory_name=F('sub_category__uz_name')) \
                 .annotate(subheading=F('uz_subheading'))
+            latest_section_name = "Сўнги хабарлар"
+            popular_section_name = "Оммабоп"
+            video_section_name = "Видео"
         else:
             qs = self.queryset \
                 .annotate(heading=F('oz_heading')) \
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
+            latest_section_name = "So'ngi xabarlar"
+            popular_section_name = "Ommabop"
+            video_section_name = "Video"
 
+
+        # latest
         latest_qs = qs \
-            .order_by('sub_category', '-created_at') \
-            .distinct('sub_category', )
-        serializer = ArticleSerializer(latest_qs, many=True)
+            .order_by('sub_category', '-created_at')[:6]
+        serializer_latest = ArticleSerializer(latest_qs, many=True)
+
+        excepted_ids = [d['id'] for d in serializer_latest.data]
 
 
         latest_dict = {
-            "category": "Последние",
-            "data": serializer.data
+            "category": latest_section_name,
+            "style":1,
+            "data": serializer_latest.data
         }
         general_queryset.append(latest_dict)
 
+        # most popular
+        popular_qs = qs.order_by('view_count').exclude(id__in=excepted_ids)[:6]
+        serializer_popular = ArticleSerializer(popular_qs, many=True)
+
+        excepted_ids += [d['id'] for d in serializer_popular.data]
+        popular_dict = {
+            "category": popular_section_name,
+            "style": 2,
+            "data": serializer_popular.data
+        }
+        general_queryset.append(popular_dict)
+
+        # video block
+        video_qs = self.queryset\
+            .filter(content_blocks__video_link__isnull=False)\
+            .values('content_blocks__video_link')
+        video_dict = {
+            "category": video_section_name,
+            "style": 3,
+            "data": video_qs
+        }
+        general_queryset.append(video_dict)
         return Response(general_queryset)
 
 
@@ -283,8 +382,10 @@ class ArticleContentView(generics.RetrieveAPIView):
             return ArticleDetailOzSerializer
 
     def retrieve(self, request, *args, **kwargs):
+
         obj = self.get_object()
         obj.view_count = obj.view_count + 1
         obj.save(update_fields=("view_count", ))
         return super().retrieve(request, *args, **kwargs)
+
 

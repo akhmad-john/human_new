@@ -55,6 +55,30 @@ class CategoryUzSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'sub_categories',)
 
 
+class TagRuSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source="ru_name")
+
+    class Meta:
+        model = Tag
+        fields = ('id', 'name')
+
+
+class TagOzSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source="oz_name")
+
+    class Meta:
+        model = Tag
+        fields = ('id', 'name')
+
+
+class TagUzSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source="uz_name")
+
+    class Meta:
+        model = Tag
+        fields = ('id', 'name')
+
+
 # Article serializers
 class ArticleRuSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField('get_category')
@@ -86,15 +110,18 @@ class ArticleSerializer(serializers.ModelSerializer):
     subheading = serializers.CharField()
     category_name = serializers.CharField()
     subcategory_name = serializers.CharField()
+    subcategory_id = serializers.CharField(source="sub_category.id")
 
     class Meta:
         model = Article
         fields = (
             'id',
+            'subcategory_id',
             'heading',
             'subheading',
             'main_image',
             'category_name',
+            'subcategory_id',
             'subcategory_name',
             'created_at',
             'view_count',
@@ -188,30 +215,36 @@ class ArticleDetailRuSerializer(serializers.ModelSerializer):
         fields = ('heading', 'subheading', 'content_blocks')
 
 
+
+
 class ArticleDetailRuSerializer(serializers.ModelSerializer):
     heading = serializers.CharField(source='ru_heading')
     subheading = serializers.CharField(source='ru_subheading')
     content_blocks = ContentBlockRuSerializer(many=True)
+    tag = TagRuSerializer(many=True)
 
     class Meta:
         model = Article
-        fields = ('heading', 'main_image', 'subheading', 'content_blocks')
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag')
 
 
 class ArticleDetailUzSerializer(serializers.ModelSerializer):
     heading = serializers.CharField(source='uz_heading')
     subheading = serializers.CharField(source='uz_subheading')
     content_blocks = ContentBlockUzSerializer(many=True)
+    tag = TagUzSerializer(many=True)
 
     class Meta:
         model = Article
-        fields = ('heading', 'main_image', 'subheading', 'content_blocks')
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag')
 
 
 class ArticleDetailOzSerializer(serializers.ModelSerializer):
     heading = serializers.CharField(source='oz_heading')
     subheading = serializers.CharField(source='oz_subheading')
     content_blocks = ContentBlockRuSerializer(many=True)
+    tag = TagOzSerializer(many=True)
+
     class Meta:
         model = Article
-        fields = ('heading', 'main_image', 'subheading', 'content_blocks')
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag')
