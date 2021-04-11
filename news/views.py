@@ -3,7 +3,7 @@ from rest_framework import status, viewsets, filters
 from .serializers import *
 from .models import Category, Article
 from rest_framework.response import Response
-from django.db.models import F
+from django.db.models import F, Max
 from .filters import *
 from itertools import chain
 from django.http import HttpResponse, JsonResponse
@@ -88,8 +88,8 @@ class ArticleListHomeView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
                 .annotate(subheading=F('ru_subheading'))
-            latest_section_name = "Последие"
-            popular_section_name = "Популярное"
+            latest_section_name = "Последние новости"
+            popular_section_name = "Популярные новости"
             video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
@@ -113,8 +113,14 @@ class ArticleListHomeView(generics.ListAPIView):
 
         # latest
         latest_qs = qs \
-            .order_by('sub_category__category', '-created_at') \
-            .distinct('sub_category__category', )
+            .order_by('sub_category__category', '-created_at')\
+            .distinct('sub_category__category',)
+
+        latest_qs = latest_qs.order_by('-created_at')
+
+
+
+
         serializer_latest = ArticleSerializer(latest_qs, many=True)
 
         excepted_ids = [d['id'] for d in serializer_latest.data]
@@ -127,7 +133,7 @@ class ArticleListHomeView(generics.ListAPIView):
 
 
         # most popular
-        popular_qs = qs.order_by('view_count').exclude(id__in=excepted_ids)[:6]
+        popular_qs = qs.order_by('view_count').exclude(id__in=excepted_ids)[:5]
         serializer_popular = ArticleSerializer(popular_qs, many=True)
 
         excepted_ids += [d['id'] for d in serializer_popular.data]
@@ -141,7 +147,7 @@ class ArticleListHomeView(generics.ListAPIView):
         # video block
         video_qs = self.queryset\
             .filter(content_blocks__video_link__isnull=False)\
-            .values('content_blocks__video_link')
+            .values('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -179,8 +185,8 @@ class ArticlesPerCategoryView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
                 .annotate(subheading=F('ru_subheading'))
-            latest_section_name = "Последие"
-            popular_section_name = "Популярное"
+            latest_section_name = "Последние новости"
+            popular_section_name = "Популярные новости"
             video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
@@ -204,7 +210,7 @@ class ArticlesPerCategoryView(generics.ListAPIView):
         # latest
         latest_qs = qs \
             .order_by('sub_category', '-created_at') \
-            .distinct('sub_category', )
+            .distinct('sub_category', )[:5]
         serializer_latest = ArticleSerializer(latest_qs, many=True)
 
         excepted_ids = [d['id'] for d in serializer_latest.data]
@@ -232,7 +238,7 @@ class ArticlesPerCategoryView(generics.ListAPIView):
         # video block
         video_qs = self.queryset\
             .filter(content_blocks__video_link__isnull=False)\
-            .values('content_blocks__video_link')
+            .values('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -271,8 +277,8 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
                 .annotate(subheading=F('ru_subheading'))
-            latest_section_name = "Последие"
-            popular_section_name = "Популярное"
+            latest_section_name = "Последние новости"
+            popular_section_name = "Популярные новости"
             video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
@@ -324,7 +330,7 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
         # video block
         video_qs = self.queryset\
             .filter(content_blocks__video_link__isnull=False)\
-            .values('content_blocks__video_link')
+            .values('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,

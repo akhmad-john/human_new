@@ -111,11 +111,13 @@ class ArticleSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField()
     subcategory_name = serializers.CharField()
     subcategory_id = serializers.CharField(source="sub_category.id")
+    category_id = serializers.CharField(source="sub_category.category.id")
 
     class Meta:
         model = Article
         fields = (
             'id',
+            'category_id',
             'subcategory_id',
             'heading',
             'subheading',
