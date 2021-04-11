@@ -116,7 +116,7 @@ class ArticleListHomeView(generics.ListAPIView):
             .order_by('sub_category__category', '-created_at')\
             .distinct('sub_category__category',)
 
-        latest_qs = latest_qs.order_by('-created_at')
+        # latest_qs = latest_qs.order_by('-created_at')
 
 
 
