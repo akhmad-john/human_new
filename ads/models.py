@@ -1,5 +1,4 @@
 from django.db import models
-
 # Create your models here.
 
 AD_TYPES = (

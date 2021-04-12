@@ -54,19 +54,25 @@ class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         if self.request.LANGUAGE_CODE == 'ru':
-            qs = self.queryset\
+            qs = self.queryset \
+                .exclude(ru_heading__isnull=True) \
+                .exclude(ru_heading__exact='') \
                 .annotate(heading=F('ru_heading'))\
                 .annotate(category_name=F('sub_category__category__ru_name'))\
                 .annotate(subcategory_name=F('sub_category__ru_name'))\
                 .annotate(subheading=F('ru_subheading'))
         elif self.request.LANGUAGE_CODE == 'uz':
-            qs = self.queryset\
+            qs = self.queryset \
+                .exclude(uz_heading__isnull=True) \
+                .exclude(uz_heading__isnull='') \
                 .annotate(heading=F('uz_heading'))\
                 .annotate(category_name=F('sub_category__category__uz_name'))\
                 .annotate(subcategory_name=F('sub_category__uz_name'))\
                 .annotate(subheading=F('uz_subheading'))
         else:
-            qs = self.queryset\
+            qs = self.queryset \
+                .exclude(oz_heading__isnull=True) \
+                .exclude(oz_heading__exact='') \
                 .annotate(heading=F('oz_heading'))\
                 .annotate(category_name=F('sub_category__category__oz_name'))\
                 .annotate(subcategory_name=F('sub_category__oz_name'))\
@@ -84,6 +90,8 @@ class ArticleListHomeView(generics.ListAPIView):
 
         if self.request.LANGUAGE_CODE == 'ru':
             qs = self.queryset \
+                .exclude(ru_heading__isnull=True) \
+                .exclude(ru_heading__exact='')\
                 .annotate(heading=F('ru_heading')) \
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
@@ -93,6 +101,8 @@ class ArticleListHomeView(generics.ListAPIView):
             video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
+                .exclude(uz_heading__isnull=True) \
+                .exclude(uz_heading__exact='') \
                 .annotate(heading=F('uz_heading')) \
                 .annotate(category_name=F('sub_category__category__uz_name')) \
                 .annotate(subcategory_name=F('sub_category__uz_name')) \
@@ -102,6 +112,8 @@ class ArticleListHomeView(generics.ListAPIView):
             video_section_name = "Видео"
         else:
             qs = self.queryset \
+                .exclude(oz_heading__isnull=True) \
+                .exclude(oz_heading__exact='') \
                 .annotate(heading=F('oz_heading')) \
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
@@ -114,11 +126,7 @@ class ArticleListHomeView(generics.ListAPIView):
         # latest
         latest_qs = qs \
             .order_by('sub_category__category', '-created_at')\
-            .distinct('sub_category__category',)
-
-        # latest_qs = latest_qs.order_by('-created_at')
-
-
+            .distinct('sub_category__category',)[:5]
 
 
         serializer_latest = ArticleSerializer(latest_qs, many=True)
@@ -181,6 +189,8 @@ class ArticlesPerCategoryView(generics.ListAPIView):
         qs = self.queryset.filter(sub_category__category_id=category_id)
         if self.request.LANGUAGE_CODE == 'ru':
             qs = qs \
+                .exclude(ru_heading__isnull=True) \
+                .exclude(ru_heading__exact='') \
                 .annotate(heading=F('ru_heading')) \
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
@@ -189,7 +199,9 @@ class ArticlesPerCategoryView(generics.ListAPIView):
             popular_section_name = "Популярные новости"
             video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
-            qs = self.queryset \
+            qs = qs \
+                .exclude(uz_heading__isnull=True) \
+                .exclude(uz_heading__exact='') \
                 .annotate(heading=F('uz_heading')) \
                 .annotate(category_name=F('sub_category__category__uz_name')) \
                 .annotate(subcategory_name=F('sub_category__uz_name')) \
@@ -198,7 +210,9 @@ class ArticlesPerCategoryView(generics.ListAPIView):
             popular_section_name = "Оммабоп"
             video_section_name = "Видео"
         else:
-            qs = self.queryset \
+            qs = qs \
+                .exclude(oz_heading__isnull=True) \
+                .exclude(oz_heading__exact='') \
                 .annotate(heading=F('oz_heading')) \
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
@@ -273,6 +287,8 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
         qs = self.queryset.filter(sub_category_id=subcategory_id)
         if self.request.LANGUAGE_CODE == 'ru':
             qs = qs \
+                .exclude(ru_heading__isnull=True) \
+                .exclude(ru_heading__exact='') \
                 .annotate(heading=F('ru_heading')) \
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
@@ -281,7 +297,9 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
             popular_section_name = "Популярные новости"
             video_section_name = "Видео"
         elif self.request.LANGUAGE_CODE == 'uz':
-            qs = self.queryset \
+            qs = qs \
+                .exclude(uz_heading__isnull=True) \
+                .exclude(uz_heading__exact='') \
                 .annotate(heading=F('uz_heading')) \
                 .annotate(category_name=F('sub_category__category__uz_name')) \
                 .annotate(subcategory_name=F('sub_category__uz_name')) \
@@ -290,7 +308,9 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
             popular_section_name = "Оммабоп"
             video_section_name = "Видео"
         else:
-            qs = self.queryset \
+            qs = qs \
+                .exclude(oz_heading__isnull=True) \
+                .exclude(oz_heading__exact='') \
                 .annotate(heading=F('oz_heading')) \
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
@@ -354,19 +374,25 @@ class ArticleBySybcategoriesPaginatedView(generics.ListAPIView):
         subcategory_id = self.kwargs.get(self.lookup_url_kwarg)
         qs = self.queryset.filter(sub_category_id=subcategory_id)
         if self.request.LANGUAGE_CODE == 'ru':
-            qs = qs\
+            qs = qs \
+                .exclude(ru_heading__isnull=True) \
+                .exclude(ru_heading__exact='') \
                 .annotate(heading=F('ru_heading'))\
                 .annotate(category_name=F('sub_category__category__ru_name'))\
                 .annotate(subcategory_name=F('sub_category__ru_name'))\
                 .annotate(subheading=F('ru_subheading'))
         elif self.request.LANGUAGE_CODE == 'uz':
-            qs = qs\
+            qs = qs \
+                .exclude(uz_heading__isnull=True) \
+                .exclude(uz_heading__exact='') \
                 .annotate(heading=F('uz_heading'))\
                 .annotate(category_name=F('sub_category__category__uz_name'))\
                 .annotate(subcategory_name=F('sub_category__uz_name'))\
                 .annotate(subheading=F('uz_subheading'))
         else:
-            qs = qs\
+            qs = qs \
+                .exclude(oz_heading__isnull=True) \
+                .exclude(oz_heading__exact='') \
                 .annotate(heading=F('oz_heading'))\
                 .annotate(category_name=F('sub_category__category__oz_name'))\
                 .annotate(subcategory_name=F('sub_category__oz_name'))\
@@ -388,6 +414,8 @@ class ArticleContentView(generics.RetrieveAPIView):
             return ArticleDetailOzSerializer
 
     def retrieve(self, request, *args, **kwargs):
+
+
 
         obj = self.get_object()
         obj.view_count = obj.view_count + 1
