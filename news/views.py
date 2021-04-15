@@ -155,7 +155,7 @@ class ArticleListHomeView(generics.ListAPIView):
         # video block
         video_qs = qs \
             .filter(content_blocks__video_link__isnull=False)\
-            .values('heading', 'subheading', 'content_blocks__video_link')[:10]
+            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -252,7 +252,7 @@ class ArticlesPerCategoryView(generics.ListAPIView):
         # video block
         video_qs = qs \
             .filter(content_blocks__video_link__isnull=False, sub_category__category_id=category_id)\
-            .values('heading', 'subheading', 'content_blocks__video_link')[:10]
+            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -351,7 +351,7 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
         # video block
         video_qs = qs \
             .filter(content_blocks__video_link__isnull=False, sub_category_id=subcategory_id)\
-            .values('heading', 'subheading', 'content_blocks__video_link')[:10]
+            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
