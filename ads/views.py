@@ -14,10 +14,10 @@ class AdDisplayView(generics.ListAPIView):
 
     def get_queryset(self):
         # up
-        ads_up_base = self.queryset.filter(ad_type=1)
-        ads_up_ids = ads_up_base.values_list('id', flat=True)
-        ads_up_random = random.sample(list(ads_up_ids), 2)
-        ads_up = ads_up_base.filter(id__in=ads_up_random)
+        # ads_up_base = self.queryset.filter(ad_type=1)
+        # ads_up_ids = ads_up_base.values_list('id', flat=True)
+        # ads_up_random = random.sample(list(ads_up_ids), 2)
+        # ads_up = ads_up_base.filter(id__in=ads_up_random)
 
         # side
         ads_side_base = self.queryset.filter(ad_type=2)
@@ -32,6 +32,6 @@ class AdDisplayView(generics.ListAPIView):
         ads_bottom = ads_bottom_base.filter(id__in=ads_bottom_random)
 
         # append ads
-        final_list = list(chain(ads_up, ads_side, ads_bottom))
+        final_list = list(chain(ads_side, ads_bottom))
         print(ads_side)
         return final_list

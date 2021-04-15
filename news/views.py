@@ -153,9 +153,9 @@ class ArticleListHomeView(generics.ListAPIView):
         general_queryset.append(popular_dict)
 
         # video block
-        video_qs = self.queryset\
+        video_qs = qs \
             .filter(content_blocks__video_link__isnull=False)\
-            .values('content_blocks__video_link')[:10]
+            .values('heading', 'subheading', 'conctent_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -401,25 +401,56 @@ class ArticleBySybcategoriesPaginatedView(generics.ListAPIView):
         return qs
 
 
+# class ArticleContentView(generics.RetrieveAPIView):
+#     lookup_url_kwarg = "id"
+#     queryset = Article.objects.all()
+#
+#     def get_serializer_class(self):
+#         if self.request.LANGUAGE_CODE == 'ru':
+#             return ArticleDetailRuSerializer
+#         elif self.request.LANGUAGE_CODE == 'uz':
+#             return ArticleDetailUzSerializer
+#         else:
+#             return ArticleDetailOzSerializer
+#
+#     def retrieve(self, request, *args, **kwargs):
+#
+#
+#
+#         obj = self.get_object()
+#         obj.view_count = obj.view_count + 1
+#         obj.save(update_fields=("view_count", ))
+#         return Response(self.request.)
+
+
 class ArticleContentView(generics.RetrieveAPIView):
     lookup_url_kwarg = "id"
-    queryset = Article.objects.all()
 
-    def get_serializer_class(self):
+
+    def get(self, request, *args, **kwargs):
+
         if self.request.LANGUAGE_CODE == 'ru':
-            return ArticleDetailRuSerializer
+            serializer = ArticleDetailRuSerializer
         elif self.request.LANGUAGE_CODE == 'uz':
-            return ArticleDetailUzSerializer
+            serializer = ArticleDetailUzSerializer
         else:
-            return ArticleDetailOzSerializer
+            serializer = ArticleDetailOzSerializer
+        article_id = self.kwargs.get(self.lookup_url_kwarg)
+        article = Article.objects.get(id=article_id)
+        subcategory_id = article.sub_category.id
+        article_serializer = serializer(article)
 
-    def retrieve(self, request, *args, **kwargs):
 
+        recomended_articles = Article.objects\
+            .filter(sub_category_id=subcategory_id)\
+            .exclude(id=article_id)\
+            .order_by('-created_at')[:6]
+        recomended_serializer = serializer(recomended_articles, many=True)
 
+        data_to_send = article_serializer.data
+        data_to_send.update({"recomended": recomended_serializer.data})
 
-        obj = self.get_object()
-        obj.view_count = obj.view_count + 1
-        obj.save(update_fields=("view_count", ))
-        return super().retrieve(request, *args, **kwargs)
+        return Response(data_to_send)
+
 
 
