@@ -155,7 +155,7 @@ class ArticleListHomeView(generics.ListAPIView):
         # video block
         video_qs = qs \
             .filter(content_blocks__video_link__isnull=False)\
-            .values('heading', 'subheading', 'conctent_blocks__video_link')[:10]
+            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -250,9 +250,9 @@ class ArticlesPerCategoryView(generics.ListAPIView):
 
 
         # video block
-        video_qs = self.queryset\
-            .filter(content_blocks__video_link__isnull=False)\
-            .values('content_blocks__video_link')[:10]
+        video_qs = qs \
+            .filter(content_blocks__video_link__isnull=False, sub_category__category_id=category_id)\
+            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -348,9 +348,10 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
         general_queryset.append(popular_dict)
 
         # video block
-        video_qs = self.queryset\
-            .filter(content_blocks__video_link__isnull=False)\
-            .values('content_blocks__video_link')[:10]
+        # video block
+        video_qs = qs \
+            .filter(content_blocks__video_link__isnull=False, sub_category_id=subcategory_id)\
+            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -430,22 +431,26 @@ class ArticleContentView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
 
         if self.request.LANGUAGE_CODE == 'ru':
-            serializer = ArticleDetailRuSerializer
+            detail_serializer = ArticleDetailRuSerializer
+            serializer_for_recomended = ArticleRuSerializer
+
         elif self.request.LANGUAGE_CODE == 'uz':
-            serializer = ArticleDetailUzSerializer
+            detail_serializer = ArticleDetailUzSerializer
+            serializer_for_recomended = ArticleUzSerializer
         else:
-            serializer = ArticleDetailOzSerializer
+            detail_serializer = ArticleDetailOzSerializer
+            serializer_for_recomended = ArticleOzSerializer
         article_id = self.kwargs.get(self.lookup_url_kwarg)
         article = Article.objects.get(id=article_id)
         subcategory_id = article.sub_category.id
-        article_serializer = serializer(article)
+        article_serializer = detail_serializer(article)
 
 
         recomended_articles = Article.objects\
             .filter(sub_category_id=subcategory_id)\
             .exclude(id=article_id)\
             .order_by('-created_at')[:6]
-        recomended_serializer = serializer(recomended_articles, many=True)
+        recomended_serializer = serializer_for_recomended(recomended_articles, many=True)
 
         data_to_send = article_serializer.data
         data_to_send.update({"recomended": recomended_serializer.data})
