@@ -59,9 +59,9 @@ class Article(models.Model):
     main_image = models.ImageField(upload_to='main_images/', verbose_name="Главное фото")
     tag = models.ManyToManyField(Tag, related_name="article")
 
-    ru_heading = models.CharField(max_length=50, null=True, blank=True, verbose_name="Оглавление(на русском)")
-    oz_heading = models.CharField(max_length=50, null=True, blank=True, verbose_name="Оглавление(на латинице)")
-    uz_heading = models.CharField(max_length=50, null=True, blank=True, verbose_name="Оглавление(на кирилице)")
+    ru_heading = models.CharField(max_length=200, null=True, blank=True, verbose_name="Оглавление(на русском)")
+    oz_heading = models.CharField(max_length=200, null=True, blank=True, verbose_name="Оглавление(на латинице)")
+    uz_heading = models.CharField(max_length=200, null=True, blank=True, verbose_name="Оглавление(на кирилице)")
 
     ru_subheading = models.TextField(null=True, blank=True, verbose_name="Описание(на русском)")
     oz_subheading = models.TextField(null=True, blank=True, verbose_name="Описание(на латинице)")
