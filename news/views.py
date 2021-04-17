@@ -127,8 +127,9 @@ class ArticleListHomeView(generics.ListAPIView):
 
         # latest
         latest_qs = qs \
-                        .order_by('sub_category', '-created_at') \
-                        .distinct('sub_category', )[:5]
+                        .distinct('sub_category', ) \
+                        .order_by('sub_category', '-created_at')[:5]
+
 
         serializer_latest = ArticleSerializer(latest_qs, many=True)
 
