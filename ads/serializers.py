@@ -4,4 +4,4 @@ from .models import *
 class AdDisplaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
-        fields = ('id', 'banner', 'ad_type', )
+        fields = ('id', 'banner', 'ad_type', 'link')

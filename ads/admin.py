@@ -4,6 +4,6 @@ from .models import Advertisement
 
 @admin.register(Advertisement)
 class ArticleAdmin(admin.ModelAdmin):
-    fields = ('company_name', 'banner', 'ad_type', 'active')
+    fields = ('company_name', 'banner', 'ad_type', 'link', 'active')
     list_display = ('company_name', 'ad_type', 'click_count', 'active')
     list_editable = ('active',)
