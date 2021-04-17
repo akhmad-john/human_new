@@ -67,7 +67,7 @@ class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
                 .exclude(uz_heading__isnull=True) \
-                .exclude(uz_heading__isnull='') \
+                .exclude(uz_heading__exact='') \
                 .annotate(heading=F('uz_heading')) \
                 .annotate(category_name=F('sub_category__category__uz_name')) \
                 .annotate(subcategory_name=F('sub_category__uz_name')) \
@@ -127,8 +127,8 @@ class ArticleListHomeView(generics.ListAPIView):
 
         # latest
         latest_qs = qs \
-                        .order_by('sub_category__category', '-created_at') \
-                        .distinct('sub_category__category', )[:5]
+                        .order_by('sub_category', '-created_at') \
+                        .distinct('sub_category', )[:5]
 
         serializer_latest = ArticleSerializer(latest_qs, many=True)
 
@@ -141,8 +141,8 @@ class ArticleListHomeView(generics.ListAPIView):
         general_queryset.append(latest_dict)
 
         # most popular
-        popular_qs = qs.order_by('sub_category__category', 'view_count') \
-                         .distinct('sub_category__category', ) \
+        popular_qs = qs.order_by('sub_category', 'view_count') \
+                         .distinct('sub_category', ) \
                          .exclude(id__in=excepted_ids)[:5]
         serializer_popular = ArticleSerializer(popular_qs, many=True)
 
