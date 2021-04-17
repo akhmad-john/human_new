@@ -9,6 +9,8 @@ from itertools import chain
 from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
 from human_uz.pagination import CustomPagination
+
+
 # Create your views here.
 
 class CategoryriesViewSet(viewsets.ReadOnlyModelViewSet):
@@ -22,6 +24,7 @@ class CategoryriesViewSet(viewsets.ReadOnlyModelViewSet):
             return CategoryUzSerializer
         else:
             return CategoryOzSerializer
+
 
 class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Article.objects.filter(display=True)
@@ -57,25 +60,25 @@ class ArticleListViewSet(viewsets.ReadOnlyModelViewSet):
             qs = self.queryset \
                 .exclude(ru_heading__isnull=True) \
                 .exclude(ru_heading__exact='') \
-                .annotate(heading=F('ru_heading'))\
-                .annotate(category_name=F('sub_category__category__ru_name'))\
-                .annotate(subcategory_name=F('sub_category__ru_name'))\
+                .annotate(heading=F('ru_heading')) \
+                .annotate(category_name=F('sub_category__category__ru_name')) \
+                .annotate(subcategory_name=F('sub_category__ru_name')) \
                 .annotate(subheading=F('ru_subheading'))
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = self.queryset \
                 .exclude(uz_heading__isnull=True) \
                 .exclude(uz_heading__isnull='') \
-                .annotate(heading=F('uz_heading'))\
-                .annotate(category_name=F('sub_category__category__uz_name'))\
-                .annotate(subcategory_name=F('sub_category__uz_name'))\
+                .annotate(heading=F('uz_heading')) \
+                .annotate(category_name=F('sub_category__category__uz_name')) \
+                .annotate(subcategory_name=F('sub_category__uz_name')) \
                 .annotate(subheading=F('uz_subheading'))
         else:
             qs = self.queryset \
                 .exclude(oz_heading__isnull=True) \
                 .exclude(oz_heading__exact='') \
-                .annotate(heading=F('oz_heading'))\
-                .annotate(category_name=F('sub_category__category__oz_name'))\
-                .annotate(subcategory_name=F('sub_category__oz_name'))\
+                .annotate(heading=F('oz_heading')) \
+                .annotate(category_name=F('sub_category__category__oz_name')) \
+                .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
 
         return qs
@@ -91,7 +94,7 @@ class ArticleListHomeView(generics.ListAPIView):
         if self.request.LANGUAGE_CODE == 'ru':
             qs = self.queryset \
                 .exclude(ru_heading__isnull=True) \
-                .exclude(ru_heading__exact='')\
+                .exclude(ru_heading__exact='') \
                 .annotate(heading=F('ru_heading')) \
                 .annotate(category_name=F('sub_category__category__ru_name')) \
                 .annotate(subcategory_name=F('sub_category__ru_name')) \
@@ -122,12 +125,10 @@ class ArticleListHomeView(generics.ListAPIView):
             popular_section_name = "Ommabop"
             video_section_name = "Video"
 
-
         # latest
         latest_qs = qs \
-            .order_by('sub_category__category', '-created_at')\
-            .distinct('sub_category__category',)[:5]
-
+                        .order_by('sub_category__category', '-created_at') \
+                        .distinct('sub_category__category', )[:5]
 
         serializer_latest = ArticleSerializer(latest_qs, many=True)
 
@@ -139,11 +140,10 @@ class ArticleListHomeView(generics.ListAPIView):
         }
         general_queryset.append(latest_dict)
 
-
         # most popular
-        popular_qs = qs.order_by('sub_category__category', 'view_count')\
-            .distinct('sub_category__category',)\
-            .exclude(id__in=excepted_ids)[:5]
+        popular_qs = qs.order_by('sub_category__category', 'view_count') \
+                         .distinct('sub_category__category', ) \
+                         .exclude(id__in=excepted_ids)[:5]
         serializer_popular = ArticleSerializer(popular_qs, many=True)
 
         excepted_ids += [d['id'] for d in serializer_popular.data]
@@ -156,14 +156,14 @@ class ArticleListHomeView(generics.ListAPIView):
 
         # video block
         video_qs = qs \
-            .filter(content_blocks__video_link__isnull=False)\
-            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
+                       .filter(content_blocks__video_link__isnull=False) \
+                       .values('heading', 'subheading', 'content_blocks__video_link').distinct(
+            'content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
             "data": video_qs
         }
-
 
         # others
         categories = Category.objects.filter(home_display=True)
@@ -225,8 +225,8 @@ class ArticlesPerCategoryView(generics.ListAPIView):
 
         # latest
         latest_qs = qs \
-            .order_by('sub_category', '-created_at') \
-            .distinct('sub_category', )[:5]
+                        .order_by('sub_category', '-created_at') \
+                        .distinct('sub_category', )[:5]
         serializer_latest = ArticleSerializer(latest_qs, many=True)
 
         excepted_ids = [d['id'] for d in serializer_latest.data]
@@ -250,11 +250,11 @@ class ArticlesPerCategoryView(generics.ListAPIView):
         }
         general_queryset.append(popular_dict)
 
-
         # video block
         video_qs = qs \
-            .filter(content_blocks__video_link__isnull=False, sub_category__category_id=category_id)\
-            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
+                       .filter(content_blocks__video_link__isnull=False, sub_category__category_id=category_id) \
+                       .values('heading', 'subheading', 'content_blocks__video_link').distinct(
+            'content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -268,7 +268,7 @@ class ArticlesPerCategoryView(generics.ListAPIView):
             sub_category_serializer = ArticleSerializer(sub_category_qs, many=True)
             sub_category_dict = {
                 "category": sub_category.ru_name,
-                "style":2,
+                "style": 2,
                 "data": sub_category_serializer.data
             }
             general_queryset.append(sub_category_dict)
@@ -280,7 +280,6 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
     lookup_url_kwarg = "subcategory_id"
     queryset = Article.objects.filter(display=True)
     serializer_class = ArticleSerializer
-
 
     def list(self, request, *args, **kwargs):
         general_queryset = []
@@ -321,18 +320,16 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
             popular_section_name = "Ommabop"
             video_section_name = "Video"
 
-
         # latest
         latest_qs = qs \
-            .order_by('sub_category', '-created_at')[:6]
+                        .order_by('sub_category', '-created_at')[:6]
         serializer_latest = ArticleSerializer(latest_qs, many=True)
 
         excepted_ids = [d['id'] for d in serializer_latest.data]
 
-
         latest_dict = {
             "category": latest_section_name,
-            "style":1,
+            "style": 1,
             "data": serializer_latest.data
         }
         general_queryset.append(latest_dict)
@@ -352,8 +349,9 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
         # video block
         # video block
         video_qs = qs \
-            .filter(content_blocks__video_link__isnull=False, sub_category_id=subcategory_id)\
-            .values('heading', 'subheading', 'content_blocks__video_link').distinct('content_blocks__video_link')[:10]
+                       .filter(content_blocks__video_link__isnull=False, sub_category_id=subcategory_id) \
+                       .values('heading', 'subheading', 'content_blocks__video_link').distinct(
+            'content_blocks__video_link')[:10]
         video_dict = {
             "category": video_section_name,
             "style": 3,
@@ -380,25 +378,25 @@ class ArticleBySybcategoriesPaginatedView(generics.ListAPIView):
             qs = qs \
                 .exclude(ru_heading__isnull=True) \
                 .exclude(ru_heading__exact='') \
-                .annotate(heading=F('ru_heading'))\
-                .annotate(category_name=F('sub_category__category__ru_name'))\
-                .annotate(subcategory_name=F('sub_category__ru_name'))\
+                .annotate(heading=F('ru_heading')) \
+                .annotate(category_name=F('sub_category__category__ru_name')) \
+                .annotate(subcategory_name=F('sub_category__ru_name')) \
                 .annotate(subheading=F('ru_subheading'))
         elif self.request.LANGUAGE_CODE == 'uz':
             qs = qs \
                 .exclude(uz_heading__isnull=True) \
                 .exclude(uz_heading__exact='') \
-                .annotate(heading=F('uz_heading'))\
-                .annotate(category_name=F('sub_category__category__uz_name'))\
-                .annotate(subcategory_name=F('sub_category__uz_name'))\
+                .annotate(heading=F('uz_heading')) \
+                .annotate(category_name=F('sub_category__category__uz_name')) \
+                .annotate(subcategory_name=F('sub_category__uz_name')) \
                 .annotate(subheading=F('uz_subheading'))
         else:
             qs = qs \
                 .exclude(oz_heading__isnull=True) \
                 .exclude(oz_heading__exact='') \
-                .annotate(heading=F('oz_heading'))\
-                .annotate(category_name=F('sub_category__category__oz_name'))\
-                .annotate(subcategory_name=F('sub_category__oz_name'))\
+                .annotate(heading=F('oz_heading')) \
+                .annotate(category_name=F('sub_category__category__oz_name')) \
+                .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
 
         return qs
@@ -429,35 +427,53 @@ class ArticleBySybcategoriesPaginatedView(generics.ListAPIView):
 class ArticleContentView(generics.RetrieveAPIView):
     lookup_url_kwarg = "id"
 
-
     def get(self, request, *args, **kwargs):
-
-        if self.request.LANGUAGE_CODE == 'ru':
-            detail_serializer = ArticleDetailRuSerializer
-            serializer_for_recomended = ArticleRuSerializer
-
-        elif self.request.LANGUAGE_CODE == 'uz':
-            detail_serializer = ArticleDetailUzSerializer
-            serializer_for_recomended = ArticleUzSerializer
-        else:
-            detail_serializer = ArticleDetailOzSerializer
-            serializer_for_recomended = ArticleOzSerializer
         article_id = self.kwargs.get(self.lookup_url_kwarg)
         article = Article.objects.get(id=article_id)
         subcategory_id = article.sub_category.id
+        recommended_qs = Article.objects\
+            .filter(sub_category_id=subcategory_id, display=True) \
+            .exclude(id=article_id)
+        if self.request.LANGUAGE_CODE == 'ru':
+            detail_serializer = ArticleDetailRuSerializer
+            recommended_qs = recommended_qs \
+                .exclude(ru_heading__isnull=True) \
+                .exclude(ru_heading__exact='') \
+                .order_by('-created_at')[:6] \
+                .annotate(heading=F('ru_heading')) \
+                .annotate(category_name=F('sub_category__category__ru_name')) \
+                .annotate(subcategory_name=F('sub_category__ru_name')) \
+                .annotate(subheading=F('ru_subheading'))
+        elif self.request.LANGUAGE_CODE == 'uz':
+            detail_serializer = ArticleDetailUzSerializer
+            recommended_qs = recommended_qs \
+                .exclude(uz_heading__isnull=True) \
+                .exclude(uz_heading__exact='') \
+                .order_by('-created_at')[:6] \
+                .annotate(heading=F('uz_heading')) \
+                .annotate(category_name=F('sub_category__category__uz_name')) \
+                .annotate(subcategory_name=F('sub_category__uz_name')) \
+                .annotate(subheading=F('uz_subheading'))
+        else:
+            detail_serializer = ArticleDetailOzSerializer
+            recommended_qs = recommended_qs \
+                .exclude(oz_heading__isnull=True) \
+                .exclude(oz_heading__exact='') \
+                .order_by('-created_at')[:6] \
+                .annotate(heading=F('oz_heading')) \
+                .annotate(category_name=F('sub_category__category__oz_name')) \
+                .annotate(subcategory_name=F('sub_category__oz_name')) \
+                .annotate(subheading=F('oz_subheading'))
+
         article_serializer = detail_serializer(article)
 
-
-        recomended_articles = Article.objects\
-            .filter(sub_category_id=subcategory_id)\
-            .exclude(id=article_id)\
-            .order_by('-created_at')[:6]
-        recomended_serializer = serializer_for_recomended(recomended_articles, many=True)
+        recommended_serializer = ArticleSerializer(recommended_qs, many=True)
 
         data_to_send = article_serializer.data
-        data_to_send.update({"recomended": recomended_serializer.data})
+        data_to_send.update({"recomended": recommended_serializer.data})
+
+
+        article.view_count += 1
+        article.save()
 
         return Response(data_to_send)
-
-
-
