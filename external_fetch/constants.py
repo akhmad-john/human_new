@@ -1,0 +1,5 @@
+CURRENCIES = [
+    'USD',
+    'EUR',
+    'RUB',
+]

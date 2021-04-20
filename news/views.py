@@ -400,6 +400,8 @@ class ArticleBySybcategoriesPaginatedView(generics.ListAPIView):
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
 
+        serializer = ArticleSerializer(data=qs, many=True)
+        serializer.is_valid()
         return qs
 
 
