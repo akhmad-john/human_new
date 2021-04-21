@@ -9,4 +9,4 @@ from .constants import CURRENCIES
 
 class CurrencyRateShareView(APIView):
     def get(self, request):
-        return Response(return_currency_object())
+        return Response(return_currency_object(self.request.LANGUAGE_CODE))
