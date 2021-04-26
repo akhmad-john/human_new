@@ -14,7 +14,7 @@ class Advertisement(models.Model):
     ad_type = models.IntegerField(choices=AD_TYPES)
     click_count = models.IntegerField(default=0)
     active = models.BooleanField(default=False)
-    link = models.CharField(max_length=200, null=True,)
+    link = models.CharField(max_length=200, null=True, blank=True)
 
     class Meta:
         verbose_name = "Реклама"
