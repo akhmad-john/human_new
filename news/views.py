@@ -110,7 +110,7 @@ class ArticleListHomeView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__uz_name')) \
                 .annotate(subcategory_name=F('sub_category__uz_name')) \
                 .annotate(subheading=F('uz_subheading'))
-            latest_section_name = "Сўнги хабарлар"
+            latest_section_name = "Сўнгги хабарлар"
             popular_section_name = "Оммабоп"
             video_section_name = "Видео"
         else:
@@ -121,7 +121,7 @@ class ArticleListHomeView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
-            latest_section_name = "So'ngi xabarlar"
+            latest_section_name = "So'nggi xabarlar"
             popular_section_name = "Ommabop"
             video_section_name = "Video"
 
@@ -171,8 +171,14 @@ class ArticleListHomeView(generics.ListAPIView):
         for category in categories:
             category_qs = qs.filter(sub_category__category=category).exclude(id__in=excepted_ids)[:6]
             category_serializer = ArticleSerializer(category_qs, many=True)
+            if self.request.LANGUAGE_CODE == 'ru':
+                category_name = category.ru_name
+            if self.request.LANGUAGE_CODE == 'uz':
+                category_name = category.uz_name
+            else:
+                category_name = category.oz_name
             category_dict = {
-                "category": category.ru_name,
+                "category": category_name,
                 "style": 2,
                 "data": category_serializer.data
             }
