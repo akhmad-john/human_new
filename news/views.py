@@ -173,7 +173,7 @@ class ArticleListHomeView(generics.ListAPIView):
             category_serializer = ArticleSerializer(category_qs, many=True)
             if self.request.LANGUAGE_CODE == 'ru':
                 category_name = category.ru_name
-            else if self.request.LANGUAGE_CODE == 'uz':
+            elif self.request.LANGUAGE_CODE == 'uz':
                 category_name = category.uz_name
             else:
                 category_name = category.oz_name
