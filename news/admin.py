@@ -65,7 +65,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
     ]
     filter_horizontal = ('tag',)
-    suit_form_tabs = (('russian', 'Русский'), ('uzbeklat', 'O`zbekcha'), ('uzbekcyr', 'Узбекча'))
+    suit_form_tabs = (('russian', 'Русский'), ('uzbeklat', 'English'), ('uzbekcyr', 'Узбекча'))
     list_filter = ('sub_category', 'sub_category__category', 'tag')
     list_display = ('id', 'ru_heading', 'created_at', 'display')
     list_editable = ('display',)

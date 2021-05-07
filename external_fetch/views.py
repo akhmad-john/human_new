@@ -17,10 +17,13 @@ class WeatherFetchView(APIView):
     def get(self, request):
         if self.request.LANGUAGE_CODE == 'ru':
             language_code = "ru"
+            temp_desc = "ясно"
         elif self.request.LANGUAGE_CODE == 'uz':
             language_code = "uz"
+            temp_desc = "quyosh"
         else:
             language_code = "uz"
+            temp_desc = "sunny"
         headers = {
             'X-RapidAPI-Key': 'bed183b66dmshddd8a5a74c4a091p1eb05djsn72ff595f0259',
             'X-RapidAPI-Host': 'community-open-weather-map.p.rapidapi.com'

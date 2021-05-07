@@ -121,8 +121,8 @@ class ArticleListHomeView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
-            latest_section_name = "So'nggi xabarlar"
-            popular_section_name = "Ommabop"
+            latest_section_name = "Latest news"
+            popular_section_name = "Popular"
             video_section_name = "Video"
 
         # latest
@@ -226,8 +226,8 @@ class ArticlesPerCategoryView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
-            latest_section_name = "So'ngi xabarlar"
-            popular_section_name = "Ommabop"
+            latest_section_name = "Latest news"
+            popular_section_name = "Popular"
             video_section_name = "Video"
 
         # latest
@@ -323,8 +323,8 @@ class ArticlesPerSubCategoryView(generics.ListAPIView):
                 .annotate(category_name=F('sub_category__category__oz_name')) \
                 .annotate(subcategory_name=F('sub_category__oz_name')) \
                 .annotate(subheading=F('oz_subheading'))
-            latest_section_name = "So'ngi xabarlar"
-            popular_section_name = "Ommabop"
+            latest_section_name = "Latest news"
+            popular_section_name = "Popular"
             video_section_name = "Video"
 
         # latest
