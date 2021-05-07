@@ -212,22 +212,11 @@ class ArticleDetailRuSerializer(serializers.ModelSerializer):
     heading = serializers.CharField(source='ru_heading')
     subheading = serializers.CharField(source='ru_subheading')
     content_blocks = ContentBlockRuSerializer(many=True)
-    class Meta:
-        model = Article
-        fields = ('heading', 'subheading', 'content_blocks')
-
-
-
-
-class ArticleDetailRuSerializer(serializers.ModelSerializer):
-    heading = serializers.CharField(source='ru_heading')
-    subheading = serializers.CharField(source='ru_subheading')
-    content_blocks = ContentBlockRuSerializer(many=True)
     tag = TagRuSerializer(many=True)
 
     class Meta:
         model = Article
-        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag')
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag', 'created_at', 'view_count',)
 
 
 class ArticleDetailUzSerializer(serializers.ModelSerializer):
@@ -238,7 +227,7 @@ class ArticleDetailUzSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag')
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag', 'created_at', 'view_count',)
 
 
 class ArticleDetailOzSerializer(serializers.ModelSerializer):
@@ -249,4 +238,4 @@ class ArticleDetailOzSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag')
+        fields = ('heading', 'main_image', 'subheading', 'content_blocks', 'tag', 'created_at', 'view_count',)
