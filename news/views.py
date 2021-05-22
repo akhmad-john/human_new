@@ -143,7 +143,7 @@ class ArticleListHomeView(generics.ListAPIView):
         # most popular
         popular_qs = qs.order_by('sub_category', 'view_count') \
                          .distinct('sub_category', ) \
-                         .exclude(id__in=excepted_ids)[:5]
+                         .exclude(id__in=excepted_ids)[:6]
         serializer_popular = ArticleSerializer(popular_qs, many=True)
 
         excepted_ids += [d['id'] for d in serializer_popular.data]
