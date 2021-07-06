@@ -233,7 +233,7 @@ class ArticleDetailUzSerializer(serializers.ModelSerializer):
 class ArticleDetailOzSerializer(serializers.ModelSerializer):
     heading = serializers.CharField(source='oz_heading')
     subheading = serializers.CharField(source='oz_subheading')
-    content_blocks = ContentBlockRuSerializer(many=True)
+    content_blocks = ContentBlockOzSerializer(many=True)
     tag = TagOzSerializer(many=True)
 
     class Meta:
