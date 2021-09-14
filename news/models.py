@@ -7,6 +7,8 @@ from core.models import TimeStampMixin
 
 
 class Category(TimeStampMixin):
+    order = models.PositiveSmallIntegerField(verbose_name="Номер порядка", default=0)
+    
     ru_name = models.CharField(max_length=20, verbose_name="Название(на русском)")
     oz_name = models.CharField(max_length=20, null=True, verbose_name="Название(на латинице)")
     uz_name = models.CharField(max_length=20, null=True, verbose_name="Название(на кирилице)")
@@ -20,6 +22,7 @@ class Category(TimeStampMixin):
         return self.ru_name
 
     class Meta:
+        ordering = ['order',]
         verbose_name = "Категории"
         verbose_name_plural = "Категории"
 
